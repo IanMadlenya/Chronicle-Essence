@@ -10,7 +10,7 @@ in keeping with the technologies you have in place already, giving you the optio
 which provide immediate benefit to your projects and your team.
 
 How you deploy your components and which transports you use is a configuration detail. 
-This should require a minimum of alteration of your components. 
+This should require a minimum of alteration of your business components to use different transports (or no transport). 
 You are free to use the transports and distribution strategy which suits your needs.
 Even one version of your application will have different requirements depending on whether it is used in production, testing, 
 unit testing and debugging.  You want a framework which allows you to run your code in any of these mode without your framework 
@@ -84,9 +84,11 @@ The data stores we are looking support are
 
 A number of models can make distributing work easier.
 
-- Request/Response, Synchronous and Asynchronous
+- Request/Response, Remote Command, Synchronous and Asynchronous
 - Request/Callback, Synchronous and Asynchronous
-- Subscription, with Bootstrap, or updates only.
+- Remote Visitor pattern, Synschornous and Asynchronous
+- Subscription control, with Bootstrap, or updates only.
 - Lambda architecture for scalable asynchronous processing.
 - Lambda architecture with state for fast restart.
 - Message Handlers passed from Client to Server to support multiple versions concurrently.
+
