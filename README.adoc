@@ -1,6 +1,8 @@
 = README
 Peter Lawrey
 
+Introduction https://vanilla-java.github.io/2016/04/30/Microservices-are-about-applying-a-group-of-Best-Practices.html[Microservices are about applying a group of Best Practices] 
+
 === Chronicle Essence programming model framework
 
 Chronicle Essence is designed to be a unifying framework which allows you to configure and distribute your business components
