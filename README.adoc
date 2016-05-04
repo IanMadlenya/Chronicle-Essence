@@ -64,6 +64,7 @@ data models describing the data you need to retain (using Data Transfer Objects)
 The transports Essence is designed to support are
 
 - no transport, direct method calls.
+- shared memory e.g. /dev/shm and tmpfs
 - plain TCP
 - Java Messaging Service
 - HTTP/REST
