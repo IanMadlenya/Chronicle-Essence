@@ -1,0 +1,90 @@
+= README
+Peter Lawrey
+
+=== Chronicle Essence programming model framework
+
+Chronicle Essence is designed to be a unifying framework which allows you to configure and distribute your business components
+in keeping with the technologies you have in place already, giving you the option to incrementally take advantage of best practices
+which provide immediate benefit to your projects and your team.
+
+How you deploy your components and which transports you use is a configuration detail. 
+This should require a minimum of alteration of your components. 
+You are free to use the transports and distribution strategy which suits your needs.
+Even one version of your application will have different requirements depending on whether it is used in production, testing, 
+unit testing and debugging.  You want a framework which allows you to run your code in any of these mode without your framework 
+or your design choices getting in the way.  A poor choice of framework can dramatically lengthen your development lifecycle.
+
+=== Monotliths vs Microservices
+
+Monoliths make it easier to develop, deploy at once, test and debug.  You want to be able to utilise this tighter development lifecycle while developing and maintaining your software.
+
+Microservices make it easier to divide work between teams and across machines.  As your system gets more complex you need to be able to divide up your work into right sized, easy to understand and reason about pieces of functionality.
+
+=== Centralized databases vs Datagrids
+
+Centralised Databases make it easier to maintain a high level of quality in your data.
+
+Datagrids scale better in terms of performance and also productivity of your developers.  
+Development can include staff with a more business focus with their more relaxed/flexible data storage models.
+
+=== Business Component design and Data models.
+
+Business components need to fulfill a business requirement, they should be able to be deployed as a monolith or a microservice as a configuration and deployment detail.
+
+Data models which hold the state associated with a business component should be able to be stored either centrally, in a cluster or wrapped as a service.
+
+=== Unifying design for code and data.
+
+The key to unifying these models with a minimum of alteration of these components requires some coding convensions 
+to make components and data models which can run stand alone as required.  Following these standards can be hard, unless you have libraries, 
+if not a framework to enforce this, or encourage their use.
+
+=== Using a framework
+
+A framework can force developers to conform to specific models.  However, ideally a framework should encourage developers 
+to use it correctly because it is easier than not using the framework.
+
+Frameworks have trouble getting out of their own way.  They make it easy to get started, but under the covers 
+they are not designed to do less work easily.  This is only a problem when you face performance issues.  One solution is to throw
+hardware at the problem and to a point hardware is cheaper than developers.  
+
+When you have a large system, or you have tight latency requirements, you have to make better use of the hardware you have and 
+you can get dramatic saving by doing less work (though this takes development effort)  
+A set of libraries which are design to be used easily stand alone can make working underneath the covers a pleasure instead of a battle.
+
+=== Chronicle Essence keeping it simple.
+
+Chronicle Essence is designed to make these concerns configurable.  You build business components to a set of conventions and contracts (using interfaces), 
+data models describing the data you need to retain (using Data Transfer Objects), and you configure how you want this code and data deployed.
+
+=== Transports 
+
+The transports Essence is designed to support are
+
+- no transport, direct method calls.
+- plain TCP
+- Java Messaging Service
+- HTTP/REST
+- Websockets
+- Chronicle Queue.
+
+=== Data Stores
+
+The data stores we are looking support are
+
+- in memory on heap Maps.
+- JDBC
+- LDAP
+- Chronicle Map.
+- other NoSQL datastores.
+
+=== Interactions between distributed components
+
+A number of models can make distributing work easier.
+
+- Request/Response, Synchronous and Asynchronous
+- Request/Callback, Synchronous and Asynchronous
+- Subscription, with Bootstrap, or updates only.
+- Lambda architecture for scalable asynchronous processing.
+- Lambda architecture with state for fast restart.
+- Message Handlers passed from Client to Server to support multiple versions concurrently.
