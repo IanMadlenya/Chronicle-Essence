@@ -88,6 +88,7 @@ A number of models can make distributing work easier.
 - Request/Response, Remote Command, Synchronous and Asynchronous
 - Request/Callback, Synchronous and Asynchronous
 - Remote Visitor pattern, Synchronous and Asynchronous
+- Request/return Proxy, Synchronous 
 - Subscription control, with Bootstrap, or updates only.
 - Lambda architecture for scalable asynchronous processing.
 - Lambda architecture with state for fast restart.
