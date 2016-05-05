@@ -98,4 +98,5 @@ Work routing models
 - named services.
 - actor messages.
 - data partitioned.
+- scatter/gather map/reduce.
 
