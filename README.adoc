@@ -93,3 +93,9 @@ A number of models can make distributing work easier.
 - Lambda architecture with state for fast restart.
 - Message Handlers passed from Client to Server to support multiple versions concurrently.
 
+Work routing models
+
+- named services.
+- actor messages.
+- data partitioned.
+
