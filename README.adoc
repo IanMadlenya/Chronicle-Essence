@@ -70,6 +70,7 @@ The transports Essence is designed to support are
 - HTTP/REST
 - Websockets
 - Chronicle Queue.
+- logging. e.g. slf4j
 
 === Data Stores
 
