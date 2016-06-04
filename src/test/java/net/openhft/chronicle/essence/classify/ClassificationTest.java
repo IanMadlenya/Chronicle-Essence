@@ -1,6 +1,5 @@
 package net.openhft.chronicle.essence.classify;
 
-import net.openhft.chronicle.essence.classify.ProxyFactory;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationHandler;
@@ -11,7 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.SortedMap;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.ConcurrentNavigableMap;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class ClassificationTest {
         BlockingDeque mock = proxyFactory.mock();
         mock.forEach(subscriptionAny());
         lastCall().waitSynchronously();
-        when(mock.iterator()).returnProxy();
+
         assertEquals("public abstract boolean Collection.addAll(Collection)=RequestResponse{method=public abstract boolean Collection.addAll(Collection), synchronous=SYNCHRONOUS}\n" +
                         "public abstract void BlockingDeque.addFirst(Object)=AsyncLambda{method=public abstract void BlockingDeque.addFirst(Object)}\n" +
                         "public abstract void BlockingDeque.addLast(Object)=AsyncLambda{method=public abstract void BlockingDeque.addLast(Object)}\n" +
@@ -37,7 +38,7 @@ public class ClassificationTest {
                         "public abstract void Collection.clear()=AsyncLambda{method=public abstract void Collection.clear()}\n" +
                         "public abstract boolean Collection.containsAll(Collection)=RequestResponse{method=public abstract boolean Collection.containsAll(Collection), synchronous=SYNCHRONOUS}\n" +
                         "public abstract boolean BlockingDeque.contains(Object)=RequestResponse{method=public abstract boolean BlockingDeque.contains(Object), synchronous=SYNCHRONOUS}\n" +
-                        "public abstract Iterator Deque.descendingIterator()=RequestSubscription{method=public abstract Iterator Deque.descendingIterator(), callMode=ASYNCHONOUS, argFilters=[]}\n" +
+                        "public abstract Iterator Deque.descendingIterator()=RequestSubscription{method=public abstract Iterator Deque.descendingIterator(), callMode=SYNCHRONOUS, argFilters=[]}\n" +
                         "public abstract int BlockingQueue.drainTo(Collection,int)=RequestResponse{method=public abstract int BlockingQueue.drainTo(Collection,int), synchronous=SYNCHRONOUS}\n" +
                         "public abstract int BlockingQueue.drainTo(Collection)=RequestResponse{method=public abstract int BlockingQueue.drainTo(Collection), synchronous=SYNCHRONOUS}\n" +
                         "public abstract Object BlockingDeque.element()=RequestResponse{method=public abstract Object BlockingDeque.element(), synchronous=SYNCHRONOUS}\n" +
@@ -47,7 +48,7 @@ public class ClassificationTest {
                         "public abstract Object Deque.getLast()=RequestResponse{method=public abstract Object Deque.getLast(), synchronous=SYNCHRONOUS}\n" +
                         "public abstract int Collection.hashCode()=RequestResponse{method=public abstract int Collection.hashCode(), synchronous=SYNCHRONOUS}\n" +
                         "public abstract boolean Collection.isEmpty()=RequestResponse{method=public abstract boolean Collection.isEmpty(), synchronous=SYNCHRONOUS}\n" +
-                        "public abstract Iterator BlockingDeque.iterator()=RequestProxy{method=public abstract Iterator BlockingDeque.iterator()}\n" +
+                        "public abstract Iterator BlockingDeque.iterator()=RequestSubscription{method=public abstract Iterator BlockingDeque.iterator(), callMode=SYNCHRONOUS, argFilters=[]}\n" +
                         "public abstract boolean BlockingDeque.offerFirst(Object,long,TimeUnit) throws InterruptedException=RequestResponse{method=public abstract boolean BlockingDeque.offerFirst(Object,long,TimeUnit) throws InterruptedException, synchronous=SYNCHRONOUS}\n" +
                         "public abstract boolean BlockingDeque.offerFirst(Object)=RequestResponse{method=public abstract boolean BlockingDeque.offerFirst(Object), synchronous=SYNCHRONOUS}\n" +
                         "public abstract boolean BlockingDeque.offerLast(Object,long,TimeUnit) throws InterruptedException=RequestResponse{method=public abstract boolean BlockingDeque.offerLast(Object,long,TimeUnit) throws InterruptedException, synchronous=SYNCHRONOUS}\n" +
@@ -95,6 +96,7 @@ public class ClassificationTest {
         ProxyFactory<ScheduledExecutorService> proxyFactory = proxyFactory(ScheduledExecutorService.class);
         ScheduledExecutorService mock = proxyFactory.mock();
         when(mock.shutdownNow()).waitSynchronously();
+
         assertEquals("public abstract boolean ExecutorService.awaitTermination(long,TimeUnit) throws InterruptedException=RequestResponse{method=public abstract boolean ExecutorService.awaitTermination(long,TimeUnit) throws InterruptedException, synchronous=SYNCHRONOUS}\n" +
                         "public abstract void Executor.execute(Runnable)=AsyncLambda{method=public abstract void Executor.execute(Runnable)}\n" +
                         "public abstract List ExecutorService.invokeAll(Collection,long,TimeUnit) throws InterruptedException=RequestResponse{method=public abstract List ExecutorService.invokeAll(Collection,long,TimeUnit) throws InterruptedException, synchronous=SYNCHRONOUS}\n" +
@@ -165,10 +167,10 @@ public class ClassificationTest {
                         "public abstract int List.hashCode()=RequestResponse{method=public abstract int List.hashCode(), synchronous=SYNCHRONOUS}\n" +
                         "public abstract int List.indexOf(Object)=RequestResponse{method=public abstract int List.indexOf(Object), synchronous=SYNCHRONOUS}\n" +
                         "public abstract boolean List.isEmpty()=RequestResponse{method=public abstract boolean List.isEmpty(), synchronous=SYNCHRONOUS}\n" +
-                        "public abstract Iterator List.iterator()=RequestSubscription{method=public abstract Iterator List.iterator(), callMode=ASYNCHONOUS, argFilters=[]}\n" +
+                        "public abstract Iterator List.iterator()=RequestSubscription{method=public abstract Iterator List.iterator(), callMode=SYNCHRONOUS, argFilters=[]}\n" +
                         "public abstract int List.lastIndexOf(Object)=RequestResponse{method=public abstract int List.lastIndexOf(Object), synchronous=SYNCHRONOUS}\n" +
-                        "public abstract ListIterator List.listIterator()=RequestSubscription{method=public abstract ListIterator List.listIterator(), callMode=ASYNCHONOUS, argFilters=[]}\n" +
-                        "public abstract ListIterator List.listIterator(int)=RequestSubscription{method=public abstract ListIterator List.listIterator(int), callMode=ASYNCHONOUS, argFilters=[]}\n" +
+                        "public abstract ListIterator List.listIterator()=RequestSubscription{method=public abstract ListIterator List.listIterator(), callMode=SYNCHRONOUS, argFilters=[]}\n" +
+                        "public abstract ListIterator List.listIterator(int)=RequestSubscription{method=public abstract ListIterator List.listIterator(int), callMode=SYNCHRONOUS, argFilters=[]}\n" +
                         "public default stream.Stream Collection.parallelStream()=DefaultCall{method=public default stream.Stream Collection.parallelStream()}\n" +
                         "public abstract boolean List.removeAll(Collection)=RequestResponse{method=public abstract boolean List.removeAll(Collection), synchronous=SYNCHRONOUS}\n" +
                         "public default boolean Collection.removeIf(function.Predicate)=RequestResponse{method=public default boolean Collection.removeIf(function.Predicate), synchronous=SYNCHRONOUS}\n" +
@@ -301,7 +303,7 @@ public class ClassificationTest {
                         "public abstract Comparator SortedSet.comparator()=RequestResponse{method=public abstract Comparator SortedSet.comparator(), synchronous=SYNCHRONOUS}\n" +
                         "public abstract boolean Set.containsAll(Collection)=RequestResponse{method=public abstract boolean Set.containsAll(Collection), synchronous=SYNCHRONOUS}\n" +
                         "public abstract boolean Set.contains(Object)=RequestResponse{method=public abstract boolean Set.contains(Object), synchronous=SYNCHRONOUS}\n" +
-                        "public abstract Iterator NavigableSet.descendingIterator()=RequestSubscription{method=public abstract Iterator NavigableSet.descendingIterator(), callMode=ASYNCHONOUS, argFilters=[]}\n" +
+                        "public abstract Iterator NavigableSet.descendingIterator()=RequestSubscription{method=public abstract Iterator NavigableSet.descendingIterator(), callMode=SYNCHRONOUS, argFilters=[]}\n" +
                         "public abstract NavigableSet NavigableSet.descendingSet()=RequestProxy{method=public abstract NavigableSet NavigableSet.descendingSet()}\n" +
                         "public abstract boolean Set.equals(Object)=RequestResponse{method=public abstract boolean Set.equals(Object), synchronous=SYNCHRONOUS}\n" +
                         "public abstract Object SortedSet.first()=RequestResponse{method=public abstract Object SortedSet.first(), synchronous=SYNCHRONOUS}\n" +
@@ -312,7 +314,7 @@ public class ClassificationTest {
                         "public abstract SortedSet NavigableSet.headSet(Object)=RequestProxy{method=public abstract SortedSet NavigableSet.headSet(Object)}\n" +
                         "public abstract Object NavigableSet.higher(Object)=RequestResponse{method=public abstract Object NavigableSet.higher(Object), synchronous=SYNCHRONOUS}\n" +
                         "public abstract boolean Set.isEmpty()=RequestResponse{method=public abstract boolean Set.isEmpty(), synchronous=SYNCHRONOUS}\n" +
-                        "public abstract Iterator NavigableSet.iterator()=RequestSubscription{method=public abstract Iterator NavigableSet.iterator(), callMode=ASYNCHONOUS, argFilters=[]}\n" +
+                        "public abstract Iterator NavigableSet.iterator()=RequestSubscription{method=public abstract Iterator NavigableSet.iterator(), callMode=SYNCHRONOUS, argFilters=[]}\n" +
                         "public abstract Object SortedSet.last()=RequestResponse{method=public abstract Object SortedSet.last(), synchronous=SYNCHRONOUS}\n" +
                         "public abstract Object NavigableSet.lower(Object)=RequestResponse{method=public abstract Object NavigableSet.lower(Object), synchronous=SYNCHRONOUS}\n" +
                         "public default stream.Stream Collection.parallelStream()=DefaultCall{method=public default stream.Stream Collection.parallelStream()}\n" +

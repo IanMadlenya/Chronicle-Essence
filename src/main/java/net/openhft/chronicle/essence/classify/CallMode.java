@@ -6,5 +6,5 @@ package net.openhft.chronicle.essence.classify;
 public enum CallMode {
     UNDEFINED,
     SYNCHRONOUS,
-    ASYNCHONOUS
+    ASYNCHRONOUS
 }

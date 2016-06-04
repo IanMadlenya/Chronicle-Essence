@@ -14,13 +14,14 @@ import java.util.stream.Stream;
  */
 public class ProxyFactory<I> {
 
+    static final ThreadLocal<ProxyFactory> lastProxyFactory = new ThreadLocal<>();
+    static final ThreadLocal<List<ArgFilter>> lastFilters = ThreadLocal.withInitial(ArrayList::new);
     private static final ClassValue<ProxyFactory> PROXY_FACTORY_CLASS_VALUE = new ClassValue<ProxyFactory>() {
         @Override
         protected ProxyFactory computeValue(Class<?> type) {
             return new ProxyFactory(type);
         }
     };
-
     private final Class<I> iClass;
     private final Map<Method, MethodHandler> methodMap = new TreeMap<Method, MethodHandler>((a, b) -> {
         int cmp = javaSignature(a).compareTo(javaSignature(b));
@@ -28,6 +29,8 @@ public class ProxyFactory<I> {
             return a.toString().compareTo(b.toString());
         return cmp;
     });
+    Method lastMethod;
+    Object[] lastArgs;
 
     private ProxyFactory(Class<I> iClass) {
         this.iClass = iClass;
@@ -53,41 +56,6 @@ public class ProxyFactory<I> {
         }
     }
 
-
-    private String javaSignature(Method method) {
-        return method.getName() + Arrays.toString(method.getParameterTypes());
-    }
-
-    protected MethodHandler classify(Method method) {
-        Class<?> returnType = method.getReturnType();
-        if (returnType == void.class) {
-            return AsyncLambda.of(method);
-        } else if (Future.class.isAssignableFrom(returnType) || (method.getParameterCount() == 0 && isProxyable(returnType))) {
-            return RequestProxy.of(method);
-        } else if (useSubscriptionByReturnType(returnType)) {
-            return  RequestSubscription.of(method, CallMode.ASYNCHONOUS, Collections.emptyList());
-        } else if (useDefaultByReturnType(returnType)) {
-            return  DefaultCall.of(method);
-        } else {// Request
-            return RequestResponse.of(method, CallMode.SYNCHRONOUS);
-        }
-    }
-
-    protected boolean useSubscriptionByReturnType(Class<?> returnType) {
-        return Iterator.class.isAssignableFrom(returnType);
-    }
-
-    protected boolean useDefaultByReturnType(Class<?> returnType) {
-        return Spliterator.class.isAssignableFrom(returnType)
-                || Stream.class.isAssignableFrom(returnType);
-    }
-
-    protected boolean isProxyable(Class<?> returnType) {
-        return Iterable.class.isAssignableFrom(returnType)
-                || Condition.class.isAssignableFrom(returnType)
-                || Map.class.isAssignableFrom(returnType);
-    }
-
     public static <I> ProxyFactory<I> proxyFactory1(Class<I> iClass) {
         return PROXY_FACTORY_CLASS_VALUE.get(iClass);
     }
@@ -96,16 +64,8 @@ public class ProxyFactory<I> {
         return new ProxyFactory<I>(iClass);
     }
 
-    public I mock() {
-        return (I) Proxy.newProxyInstance(iClass.getClassLoader(), new Class[]{iClass}, new PFInvocationHandler());
-    }
-
     public static <I> I mock(Class<I> iClass) {
         return proxyFactory(iClass).mock();
-    }
-
-    public Map<Method, MethodHandler> methodMap() {
-        return methodMap;
     }
 
     public static ProxyFactory.WhenClause when(Object o) {
@@ -172,6 +132,68 @@ public class ProxyFactory<I> {
         return proxyFactory.new WhenClause();
     }
 
+    private String javaSignature(Method method) {
+        return method.getName() + Arrays.toString(method.getParameterTypes());
+    }
+
+    protected MethodHandler classify(Method method) {
+        Class<?> returnType = method.getReturnType();
+        if (returnType == void.class) {
+            return AsyncLambda.of(method);
+        } else if (Future.class.isAssignableFrom(returnType) || (method.getParameterCount() == 0 && isProxyable(returnType))) {
+            return RequestProxy.of(method);
+        } else if (useSubscriptionByReturnType(returnType)) {
+            return RequestSubscription.of(method, CallMode.SYNCHRONOUS, Collections.emptyList());
+        } else if (useDefaultByReturnType(returnType)) {
+            return DefaultCall.of(method);
+        } else {// Request
+            return RequestResponse.of(method, CallMode.SYNCHRONOUS);
+        }
+    }
+
+    protected boolean useSubscriptionByReturnType(Class<?> returnType) {
+        return Iterator.class.isAssignableFrom(returnType);
+    }
+
+    protected boolean useDefaultByReturnType(Class<?> returnType) {
+        return Spliterator.class.isAssignableFrom(returnType)
+                || Stream.class.isAssignableFrom(returnType);
+    }
+
+    protected boolean isProxyable(Class<?> returnType) {
+        return Iterable.class.isAssignableFrom(returnType)
+                || Condition.class.isAssignableFrom(returnType)
+                || Map.class.isAssignableFrom(returnType);
+    }
+
+    public I mock() {
+        return (I) Proxy.newProxyInstance(iClass.getClassLoader(), new Class[]{iClass}, new PFInvocationHandler());
+    }
+
+    public Map<Method, MethodHandler> methodMap() {
+        return methodMap;
+    }
+
+    private void withCallMode(List<ArgFilter> argFilters, CallMode callMode) {
+        MethodHandler mh;
+        if (argFilters.stream().allMatch(f -> f == ArgFilters.ANY_VALUE)) {
+            if (callMode == CallMode.ASYNCHRONOUS)
+                mh = AsyncLambda.of(lastMethod);
+            else
+                mh = RequestResponse.of(lastMethod, callMode);
+        } else if (argFilters.stream().allMatch(f -> f == ArgFilters.ANY_VALUE || f == ArgFilters.SUBSCRIPTION_ANY)) {
+            mh = RequestSubscription.of(lastMethod, callMode, argFilters);
+        } else {
+            throw new UnsupportedOperationException("args: " + argFilters);
+        }
+        methodMap.put(lastMethod, mh);
+    }
+
+    private void useDefault(List<ArgFilter> argFilters) {
+        DefaultCall dc = DefaultCall.of(lastMethod);
+        methodMap.put(lastMethod, dc);
+    }
+
     public class WhenClause {
 
         public WhenClause returnProxy() {
@@ -192,7 +214,7 @@ public class ProxyFactory<I> {
         public void passAsynchronously() {
             List<ArgFilter> argFilters = lastFilters.get();
             ProxyFactory proxyFactory = lastProxyFactory.get();
-            proxyFactory.withCallMode(argFilters, CallMode.ASYNCHONOUS);
+            proxyFactory.withCallMode(argFilters, CallMode.ASYNCHRONOUS);
             lastFilters.get().clear();
         }
 
@@ -203,31 +225,6 @@ public class ProxyFactory<I> {
             lastFilters.get().clear();
         }
     }
-
-    private void withCallMode(List<ArgFilter> argFilters, CallMode callMode) {
-        MethodHandler mh;
-        if (argFilters.stream().allMatch(f -> f == ArgFilters.ANY_VALUE)) {
-            if (callMode == CallMode.ASYNCHONOUS)
-                mh = AsyncLambda.of(lastMethod);
-            else
-                mh = RequestResponse.of(lastMethod, callMode);
-        } else if (argFilters.stream().allMatch(f -> f == ArgFilters.ANY_VALUE || f == ArgFilters.SUBSCRIPTION_ANY)) {
-            mh = RequestSubscription.of(lastMethod, callMode, argFilters);
-        } else {
-            throw new UnsupportedOperationException("args: " + argFilters);
-        }
-        methodMap.put(lastMethod, mh);
-    }
-
-    private void useDefault(List<ArgFilter> argFilters) {
-        DefaultCall dc = DefaultCall.of(lastMethod);
-        methodMap.put(lastMethod, dc);
-    }
-
-    static final ThreadLocal<ProxyFactory> lastProxyFactory = new ThreadLocal<>();
-    static final ThreadLocal<List<ArgFilter>> lastFilters = ThreadLocal.withInitial(ArrayList::new);
-    Method lastMethod;
-    Object[] lastArgs;
 
     class PFInvocationHandler implements InvocationHandler {
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {

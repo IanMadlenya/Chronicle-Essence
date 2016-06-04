@@ -1,0 +1,79 @@
+= Java API Classifier
+
+This tool classifies an API in terms of the interaction which would be appropriate for distributing components which implement that API.
+
+=== Classification DSL
+
+Which many method can be classified automatically, there is a DSL available to override this description.
+
+[source, Java]
+----
+import static net.openhft.chronicle.essence.classify.ProxyFactory.*;
+
+ProxyFactory<BlockingDeque> proxyFactory = proxyFactory(BlockingDeque.class); // <1>
+BlockingDeque mock = proxyFactory.mock(); // <2>
+
+mock.forEach(subscriptionAny());  // <3>
+lastCall().waitSynchronously();
+
+when(mock.iterator()).returnProxy(); // <4>
+----
+<1> obtain the description for proxies to access a BlockingDeque
+<2> create a mock so we can override the default behaviour
+<3> specify that `forEach` will take a Subscription and the call will wait sychronously until ever value has been called
+<4> specify that `iterator()` should return a proxy to an Iterable on the server.
+
+=== Using the mock to define the interaction
+
+==== Using when(...) or lastCall()
+
+For values which return a value, you can use `when(method.call())`
+
+.defining how a method with a return value is called
+[source, Java]
+----
+when(mock.shutdownNow()).waitSynchronously();
+----
+
+For methods with don't return a value, you can use `lastCall()`
+
+.defining how a method without a return value is called
+[source, Java]
+----
+mock.clear();
+lastCall().waitSynchronously();
+----
+
+==== Defining arguments
+
+As methods can be overloaded, you need to be able to define when overloaded method you mean.
+At the moment you can only match any argument, rather than a matcher.
+
+[source, Java]
+----
+mock.forEach(subscriptionAny()); // a proxy of the argument is passed to the server.
+
+when(mock.tailMap(any())).returnProxy(); // tailMap(Object)
+when(mock.tailMap(any(), anyBoolean())).returnProxy(); // tailMap(Object, boolean)
+----
+
+==== Defining the interaction.
+
+If you want to override the default behaviour you can define
+
+[source, Java]
+----
+when(mock.headMap(any())).returnProxy(); // return a proxy to the result <1>
+
+when(mock.shutdownNow()).waitSynchronously(); // wait for the result synchornously <2>
+
+when(mock.put(any(), any())).passAsynchronously(); // call asynchronously <3>
+
+when(mock.getOrDefault(any(), any())).useDefault(); // use the default implementation <4>
+----
+<1> instead of returning a copy.
+<2> instead of returning a proxy to the List returned.
+<3> instead of waiting for a return value.
+<4> use the default call on the client instead of calling the server.
+
+
