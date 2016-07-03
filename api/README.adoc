@@ -1,0 +1,31 @@
+= Essence API
+Peter Lawrey
+
+This API forms the basis of all common services including
+
+- service discovery
+- transport discovery
+
+=== Service Discovery
+
+Services can be discovered by a combination of a name and type.
+The proxy returned by the service discovery must support the interface provided.
+The ultimate remote service might not support all or any of the methods in the type.
+
+.Putting and Getting a service
+[source, Java]
+----
+ServiceRegistry registry = new VanillaServiceRegistry();
+
+MyService ms1 = new MyService();
+
+registry.put("service1", ms1);
+
+MyService ms = registry.get("service1", MyService.class);
+----
+
+=== Transport/Infrastructure Discovery
+
+Transports can be used to access remote services. You can obtain a transport to a particular Endpoint.
+
+This directory is an implementation detail to support access to different transports and is not intended to be use directly.

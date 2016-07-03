@@ -1,5 +1,6 @@
 package net.openhft.chronicle.essence.classify;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationHandler;
@@ -18,7 +19,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.stream.Collectors;
 
 import static net.openhft.chronicle.essence.classify.ProxyFactory.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Peter on 19/05/2016.
