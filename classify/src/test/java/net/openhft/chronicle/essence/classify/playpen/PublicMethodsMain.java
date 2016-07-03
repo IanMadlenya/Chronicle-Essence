@@ -1,4 +1,4 @@
-package playpen;
+package net.openhft.chronicle.essence.classify.playpen;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -7,30 +7,6 @@ import java.lang.reflect.Proxy;
  * Created by Peter on 21/05/2016.
  */
 public class PublicMethodsMain {
-    interface A {
-        void method();
-    }
-
-    interface B extends A {
-        void method();
-    }
-
-    interface C extends B {
-        void method();
-    }
-
-    interface ABC extends A, B, C {
-
-    }
-
-    interface CBA extends C, B, A {
-
-    }
-
-    interface BAC extends B, A, C {
-
-    }
-
     public static void main(String[] args) {
         for (Method method : ABC.class.getMethods()) {
             System.out.println(method);
@@ -55,5 +31,29 @@ public class PublicMethodsMain {
             System.out.println(aClass.getSimpleName()+" calls " + method);
             return null;
         });
+    }
+
+    interface A {
+        void method();
+    }
+
+    interface B extends A {
+        void method();
+    }
+
+    interface C extends B {
+        void method();
+    }
+
+    interface ABC extends A, B, C {
+
+    }
+
+    interface CBA extends C, B, A {
+
+    }
+
+    interface BAC extends B, A, C {
+
     }
 }

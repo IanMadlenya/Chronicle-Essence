@@ -31,7 +31,7 @@ public class ClassificationTest {
         mock.forEach(subscriptionAny());
         lastCall().waitSynchronously();
 
-        assertEquals("public abstract boolean Collection.addAll(Collection)=RequestResponse{method=public abstract boolean Collection.addAll(Collection), synchronous=SYNCHRONOUS}\n" +
+        Assert.assertEquals("public abstract boolean Collection.addAll(Collection)=RequestResponse{method=public abstract boolean Collection.addAll(Collection), synchronous=SYNCHRONOUS}\n" +
                         "public abstract void BlockingDeque.addFirst(Object)=AsyncLambda{method=public abstract void BlockingDeque.addFirst(Object)}\n" +
                         "public abstract void BlockingDeque.addLast(Object)=AsyncLambda{method=public abstract void BlockingDeque.addLast(Object)}\n" +
                         "public abstract boolean BlockingDeque.add(Object)=RequestResponse{method=public abstract boolean BlockingDeque.add(Object), synchronous=SYNCHRONOUS}\n" +
@@ -97,7 +97,7 @@ public class ClassificationTest {
         ScheduledExecutorService mock = proxyFactory.mock();
         when(mock.shutdownNow()).waitSynchronously();
 
-        assertEquals("public abstract boolean ExecutorService.awaitTermination(long,TimeUnit) throws InterruptedException=RequestResponse{method=public abstract boolean ExecutorService.awaitTermination(long,TimeUnit) throws InterruptedException, synchronous=SYNCHRONOUS}\n" +
+        Assert.assertEquals("public abstract boolean ExecutorService.awaitTermination(long,TimeUnit) throws InterruptedException=RequestResponse{method=public abstract boolean ExecutorService.awaitTermination(long,TimeUnit) throws InterruptedException, synchronous=SYNCHRONOUS}\n" +
                         "public abstract void Executor.execute(Runnable)=AsyncLambda{method=public abstract void Executor.execute(Runnable)}\n" +
                         "public abstract List ExecutorService.invokeAll(Collection,long,TimeUnit) throws InterruptedException=RequestResponse{method=public abstract List ExecutorService.invokeAll(Collection,long,TimeUnit) throws InterruptedException, synchronous=SYNCHRONOUS}\n" +
                         "public abstract List ExecutorService.invokeAll(Collection) throws InterruptedException=RequestResponse{method=public abstract List ExecutorService.invokeAll(Collection) throws InterruptedException, synchronous=SYNCHRONOUS}\n" +
@@ -123,7 +123,7 @@ public class ClassificationTest {
         ReadWriteLock mock = proxyFactory.mock();
         when(mock.readLock()).returnProxy();
         when(mock.writeLock()).returnProxy();
-        assertEquals("public abstract locks.Lock locks.ReadWriteLock.readLock()=RequestProxy{method=public abstract locks.Lock locks.ReadWriteLock.readLock()}\n" +
+        Assert.assertEquals("public abstract locks.Lock locks.ReadWriteLock.readLock()=RequestProxy{method=public abstract locks.Lock locks.ReadWriteLock.readLock()}\n" +
                         "public abstract locks.Lock locks.ReadWriteLock.writeLock()=RequestProxy{method=public abstract locks.Lock locks.ReadWriteLock.writeLock()}"
                 , asString(proxyFactory.methodMap()));
     }
@@ -134,7 +134,7 @@ public class ClassificationTest {
         Lock mock = proxyFactory.mock();
         when(mock.newCondition()).returnProxy();
 
-        assertEquals("public abstract void locks.Lock.lockInterruptibly() throws InterruptedException=AsyncLambda{method=public abstract void locks.Lock.lockInterruptibly() throws InterruptedException}\n" +
+        Assert.assertEquals("public abstract void locks.Lock.lockInterruptibly() throws InterruptedException=AsyncLambda{method=public abstract void locks.Lock.lockInterruptibly() throws InterruptedException}\n" +
                         "public abstract void locks.Lock.lock()=AsyncLambda{method=public abstract void locks.Lock.lock()}\n" +
                         "public abstract locks.Condition locks.Lock.newCondition()=RequestProxy{method=public abstract locks.Condition locks.Lock.newCondition()}\n" +
                         "public abstract boolean locks.Lock.tryLock()=RequestResponse{method=public abstract boolean locks.Lock.tryLock(), synchronous=SYNCHRONOUS}\n" +
@@ -154,7 +154,7 @@ public class ClassificationTest {
 //        when(mock.stream()).useDefault();
 //        when(mock.parallelStream()).useDefault();
 
-        assertEquals("public abstract boolean List.addAll(int,Collection)=RequestResponse{method=public abstract boolean List.addAll(int,Collection), synchronous=SYNCHRONOUS}\n" +
+        Assert.assertEquals("public abstract boolean List.addAll(int,Collection)=RequestResponse{method=public abstract boolean List.addAll(int,Collection), synchronous=SYNCHRONOUS}\n" +
                         "public abstract boolean List.addAll(Collection)=RequestResponse{method=public abstract boolean List.addAll(Collection), synchronous=SYNCHRONOUS}\n" +
                         "public abstract boolean List.add(Object)=RequestResponse{method=public abstract boolean List.add(Object), synchronous=SYNCHRONOUS}\n" +
                         "public abstract void List.add(int,Object)=AsyncLambda{method=public abstract void List.add(int,Object)}\n" +
@@ -206,12 +206,12 @@ public class ClassificationTest {
 //        when(mock.keySet()).returnProxy();
 //        when(mock.values()).returnProxy();
         mock.forEach(subscriptionAny());
-        ProxyFactory.lastCall().waitSynchronously();
+        lastCall().waitSynchronously();
         when(mock.getOrDefault(any(), any())).useDefault();
         when(mock.put(any(), any())).passAsynchronously();
         when(mock.remove(any())).passAsynchronously();
 
-        assertEquals("public abstract Map$Entry NavigableMap.ceilingEntry(Object)=RequestResponse{method=public abstract Map$Entry NavigableMap.ceilingEntry(Object), synchronous=SYNCHRONOUS}\n" +
+        Assert.assertEquals("public abstract Map$Entry NavigableMap.ceilingEntry(Object)=RequestResponse{method=public abstract Map$Entry NavigableMap.ceilingEntry(Object), synchronous=SYNCHRONOUS}\n" +
                         "public abstract Object NavigableMap.ceilingKey(Object)=RequestResponse{method=public abstract Object NavigableMap.ceilingKey(Object), synchronous=SYNCHRONOUS}\n" +
                         "public abstract void Map.clear()=AsyncLambda{method=public abstract void Map.clear()}\n" +
                         "public abstract Comparator SortedMap.comparator()=RequestResponse{method=public abstract Comparator SortedMap.comparator(), synchronous=SYNCHRONOUS}\n" +
@@ -294,9 +294,9 @@ public class ClassificationTest {
         mock.clear();
         lastCall().waitSynchronously();
         mock.forEach(subscriptionAny());
-        ProxyFactory.lastCall().waitSynchronously();
+        lastCall().waitSynchronously();
 
-        assertEquals("public abstract boolean Set.addAll(Collection)=RequestResponse{method=public abstract boolean Set.addAll(Collection), synchronous=SYNCHRONOUS}\n" +
+        Assert.assertEquals("public abstract boolean Set.addAll(Collection)=RequestResponse{method=public abstract boolean Set.addAll(Collection), synchronous=SYNCHRONOUS}\n" +
                         "public abstract boolean Set.add(Object)=RequestResponse{method=public abstract boolean Set.add(Object), synchronous=SYNCHRONOUS}\n" +
                         "public abstract Object NavigableSet.ceiling(Object)=RequestResponse{method=public abstract Object NavigableSet.ceiling(Object), synchronous=SYNCHRONOUS}\n" +
                         "public abstract void Set.clear()=RequestResponse{method=public abstract void Set.clear(), synchronous=SYNCHRONOUS}\n" +
