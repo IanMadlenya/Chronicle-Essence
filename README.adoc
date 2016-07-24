@@ -1,7 +1,9 @@
 = README
 Peter Lawrey
 
-Introduction https://vanilla-java.github.io/2016/04/30/Microservices-are-about-applying-a-group-of-Best-Practices.html[Microservices are about applying a group of Best Practices] 
+Introduction https://vanilla-java.github.io/2016/04/30/Microservices-are-about-applying-a-group-of-Best-Practices.html[Microservices are about applying a group of Best Practices]
+
+NOTE: This is a clean room, blue sky project. Most likely the best ideas from here will be migrated into other existing projects.
 
 === Chronicle Essence programming model framework
 
