@@ -169,4 +169,9 @@ public class VanillaRegistry implements Registry {
             }
         }
     }
+
+    @Override
+    public <R> ResourceContext<R> usingService(String fullname, Class<R> rType) {
+        return new VanillaResourceContext<R>(fullname, rType, this.<R>find(fullname, rType));
+    }
 }

@@ -1,6 +1,7 @@
 package net.openhft.chronicle.essence.api;
 
 import java.util.NavigableSet;
+import java.util.function.Function;
 
 /**
  * Created by peter on 03/07/16.
@@ -48,6 +49,14 @@ public interface Registry {
      * @param fullname of the actor
      */
     void remove(String fullname);
+
+    <R> ResourceContext<R> usingService(String fullname, Class<R> rType);
+
+    default <R, T> T visit(String fullname, Class<R> rType, Function<R, T> function) {
+        try (ResourceContext<R> context = usingService(fullname, rType)) {
+            return function.apply(context.resource());
+        }
+    }
 
     /**
      * Obtain a set of all available names.
